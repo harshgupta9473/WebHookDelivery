@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: webhook_postgres
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: qwerty150
+      POSTGRES_DB: database
+    ports:
+      - "5433:5432"  # Using 5433 to avoid conflicts if PostgreSQL is already running locally
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - webhook_net
+
+  redis:
+    image: redis:7
+    container_name: webhook_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - webhook_net
+
+  app:
+    build:
+      context: ../  # Point to the parent directory where main.go, go.mod, Dockerfile are located
+    container_name: webhook_app
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: user
+      DB_PASSWORD: qwerty150
+      DB_NAME: database
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      QUEUE_NAME: webhook_queue
+    networks:
+      - webhook_net
+    ports:
+      - "8080:8080" 
+
+networks:
+  webhook_net:
+
+volumes:
+  postgres_data:
+  redis_data:
