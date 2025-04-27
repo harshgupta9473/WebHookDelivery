@@ -70,7 +70,7 @@ DocumentationLink: https://documenter.getpostman.com/view/34442065/2sB2j1gBvt
   - [Install Docker](https://docs.docker.com/get-docker/)
   - [Install Docker Compose](https://docs.docker.com/compose/install/)
 
-### 1. Clone the Repository
+### Clone the Repository
 ```bash
 git clone https://github.com/harshgupta9473/WebHookDelivery.git
 cd WebHookDelivery
