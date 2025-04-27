@@ -8,9 +8,10 @@ import (
 	"os/signal"
 	"time"
 
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/harshgupta9473/webhookDelivery/db"
-	redisHelper	"github.com/harshgupta9473/webhookDelivery/redis"
+	redisHelper "github.com/harshgupta9473/webhookDelivery/redis"
 	"github.com/harshgupta9473/webhookDelivery/routes"
 	"github.com/harshgupta9473/webhookDelivery/workers/delivery"
 	"github.com/harshgupta9473/webhookDelivery/workers/logsCleanup"
@@ -42,10 +43,13 @@ func main() {
 	routes.RegisterRoutes(router)
 	go logsCleanup.RunCleanupTask()
 	go delivery.DeliveryWorker()
-
+	headersOk := handlers.AllowedHeaders([]string{"X-event-type", "Content-Type", "Authorization"})
+	originsOk := handlers.AllowedOrigins([]string{"*"})
+	methodsOk := handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "OPTIONS"})
+	corsHandler := handlers.CORS(originsOk, headersOk, methodsOk)(router)
 	s := &http.Server{
 		Addr:         ":8080",
-		Handler:      router,
+		Handler:      corsHandler,
 		IdleTimeout:  120 * time.Second,
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 10 * time.Second,
