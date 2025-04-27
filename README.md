@@ -20,7 +20,7 @@
 
 ## 🛠 Tech Stack
 - **Backend**: Golang
-- **Frontend**: React.js
+- **Frontend**: Next.js
 - **Database**: PostgreSQL
 - **Queue**: Redis
 - **Containerization**: Docker, Docker Compose
@@ -62,6 +62,8 @@ Deployed on same ews ec2 server.
 Frontend Link: http://13.51.170.153:3000/subscriptions
 Backend Link: http://13.51.170.153:8080
 DocumentationLink: https://documenter.getpostman.com/view/34442065/2sB2j1gBvt
+In frontend everything can be accessed except the ingest for post.
+For that use documentation link.
 
 ## 🚀 Running the Project Locally
 
