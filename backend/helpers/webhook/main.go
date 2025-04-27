@@ -27,12 +27,12 @@ func InsertWebhook(webhook *models.Webhook) error {
 	return nil
 }
 
-func UpdateWebhookStatusAndDelivery(webhookID uuid.UUID, status string, delivered bool, updatedAt time.Time,num int) error {
+func UpdateWebhookStatusAndDelivery(webhookID uuid.UUID, status string, delivered bool, updatedAt time.Time, num int) error {
 	query := `UPDATE webhooks 
-	          SET status = $1, delivered = $2, updated_at = $3 ,retries=$4,
+	          SET status = $1, delivered = $2, updated_at = $3, retries = $4
 	          WHERE id = $5`
 
-	_, err := db.DB.Exec(query, status, delivered, updatedAt,num, webhookID)
+	_, err := db.DB.Exec(query, status, delivered, updatedAt, num, webhookID)
 	if err != nil {
 		log.Printf("Error updating webhook (ID: %v): %v", webhookID, err)
 		return err
@@ -41,6 +41,7 @@ func UpdateWebhookStatusAndDelivery(webhookID uuid.UUID, status string, delivere
 	log.Printf("Webhook updated successfully (ID: %v)", webhookID)
 	return nil
 }
+
 
 func GetWebhookByID(webhookID uuid.UUID) (*models.Webhook, error) {
 
