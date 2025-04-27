@@ -30,7 +30,8 @@ services:
 
   app:
     build:
-      context: ../  
+      context: ./backend  # Point to the 'backend' directory from the project root
+      dockerfile: Dockerfile  # No need to specify 'backend/' now, it's within the 'backend' folder
     container_name: webhook_app
     depends_on:
       - postgres
@@ -48,7 +49,17 @@ services:
     networks:
       - webhook_net
     ports:
-      - "8080:8080" 
+      - "8080:8080"  # Backend port
+
+  frontend:
+    build:
+      context: ./frontend  # Point to the 'frontend' directory from the project root
+      dockerfile: Dockerfile  # No need to specify 'frontend/' now, it's within the 'frontend' folder
+    container_name: webhook_frontend
+    ports:
+      - "3000:3000"  # Frontend port, typically Next.js runs on port 3000
+    networks:
+      - webhook_net  
 
 networks:
   webhook_net:
