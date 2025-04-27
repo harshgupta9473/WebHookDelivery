@@ -15,25 +15,22 @@ import (
 	"github.com/harshgupta9473/webhookDelivery/routes"
 	"github.com/harshgupta9473/webhookDelivery/workers/delivery"
 	"github.com/harshgupta9473/webhookDelivery/workers/logsCleanup"
-	"github.com/joho/godotenv"
+	// "github.com/joho/godotenv"
 )
 
 func main() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file: ", err)
-	}
-	log.Println("ENV loaded")
+	// err := godotenv.Load()
+	// if err != nil {
+	// 	log.Fatal("Error loading .env file: ", err)
+	// }
+	// log.Println("ENV loaded")
 	// Initialize database
 	db.InitDB()
 	redisHelper.InitRedis()
-	if err != nil {
-		log.Fatal("Error initializing database: ", err)
-	}
 	log.Println("Database initialized")
 
 	// Create tables
-	err = db.CreatAllTable()
+	err := db.CreatAllTable()
 	if err != nil {
 		log.Fatalf("Error creating tables: %v", err)
 	}
