@@ -57,7 +57,6 @@ func UpdateSubscription(subscriptionID uuid.UUID, data *models.Subscription) err
         SET target_url = $1, secret = $2, event_types = $3, updated_at = NOW()
         WHERE id = $4
     `
-
 	result, err := db.DB.Exec(query, data.TargetURL, data.Secret, eventTypes, subscriptionID)
 	if err != nil {
 		log.Printf("Error updating subscription: %v", err)
@@ -75,6 +74,8 @@ func UpdateSubscription(subscriptionID uuid.UUID, data *models.Subscription) err
 		log.Printf("No subscription found with ID: %s", subscriptionID)
 		return fmt.Errorf("No subscription found with ID: %s", subscriptionID)
 	}
+	data.EventTypes=eventTypes
+	data.ID=subscriptionID
 
 	return nil
 }

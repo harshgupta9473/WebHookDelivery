@@ -44,7 +44,7 @@ func CreatWebHookTable()error{
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     retries INT DEFAULT 0 ,
-    FOREIGN KEY (subscription_id) REFERENCES subscriptions(id)
+    FOREIGN KEY (subscription_id) REFERENCES subscriptions(id) ON DELETE CASCADE
 );`
     _,err:=DB.Exec(query)
     return err
@@ -61,8 +61,8 @@ func CreateLogTable()error{
     http_status_code INT,
     error_details TEXT,
     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (webhook_id) REFERENCES webhooks(id),
-    FOREIGN KEY (subscription_id) REFERENCES subscriptions(id)
+    FOREIGN KEY (webhook_id) REFERENCES webhooks(id) ON DELETE CASCADE,
+    FOREIGN KEY (subscription_id) REFERENCES subscriptions(id) ON DELETE CASCADE
    );`  
    _,err:=DB.Exec(query)
    return err

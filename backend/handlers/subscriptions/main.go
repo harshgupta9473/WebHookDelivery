@@ -8,6 +8,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
+	"github.com/harshgupta9473/webhookDelivery/cache"
 	subscriptionDBHelper "github.com/harshgupta9473/webhookDelivery/helpers/subscriptions"
 	"github.com/harshgupta9473/webhookDelivery/models"
 	"github.com/harshgupta9473/webhookDelivery/utils"
@@ -89,6 +90,7 @@ func UpdateSubscription(w http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
+	cache.DeleteCachedSubscriptionDetails(subscriptionID)
 
 	utils.WriteJson(w, http.StatusOK, utils.APIResponse{
 		Status:  "success",

@@ -68,7 +68,7 @@ func ProcessWebHooks(payload json.RawMessage, subscriptionID uuid.UUID, targetUR
 	err := deliverPayload(payload, targetURL, 1, webHookID, subscriptionID)
 	if err == nil {
 		log.Printf("Successfully delivered payload for subscription %s on first attempt", subscriptionID)
-		err=webhookHelper.UpdateWebhookStatusAndDelivery(webHookID,"success",true,time.Now())
+		err=webhookHelper.UpdateWebhookStatusAndDelivery(webHookID,"success",true,time.Now(),0)
 			if err!=nil{
 				log.Println("error updating webhooks by id")
 			}
@@ -78,15 +78,15 @@ func ProcessWebHooks(payload json.RawMessage, subscriptionID uuid.UUID, targetUR
 	log.Printf("First attempt failed for subscription %s, starting retry in background: %v", subscriptionID, err)
 
 	go func() {
-		retryErr := deliverPayloadWithRetry(payload, targetURL, webHookID, subscriptionID)
+		no,retryErr := deliverPayloadWithRetry(payload, targetURL, webHookID, subscriptionID)
 		if retryErr != nil {
 			log.Printf("Retry failed for subscription %s: %v", subscriptionID, retryErr)
-			err=webhookHelper.UpdateWebhookStatusAndDelivery(webHookID,"failed",false,time.Now())
+			err=webhookHelper.UpdateWebhookStatusAndDelivery(webHookID,"failed",false,time.Now(),no)
 			if err!=nil{
 				log.Println("error updating webhooks by id")
 			}
 		}else{
-			err=webhookHelper.UpdateWebhookStatusAndDelivery(webHookID,"success",true,time.Now())
+			err=webhookHelper.UpdateWebhookStatusAndDelivery(webHookID,"success",true,time.Now(),no)
 			if err!=nil{
 				log.Println("error updating webhooks by id")
 			}
@@ -159,15 +159,17 @@ func deliverPayload(payload json.RawMessage, targetURL string, num int, webHookI
 }
 
 
-func deliverPayloadWithRetry(payload json.RawMessage, targetURL string, webHookID uuid.UUID,subscriptionID uuid.UUID) error {
+func deliverPayloadWithRetry(payload json.RawMessage, targetURL string, webHookID uuid.UUID,subscriptionID uuid.UUID) (int,error) {
 	var err error
+	no:=0;
 	for attempt := 0; attempt < MaxRetryAttempts; attempt++ {
 		log.Printf("Retry attempt %d for %s", attempt+1, targetURL)
 		err = deliverPayload(payload, targetURL, attempt+1, webHookID,subscriptionID)
 		if err == nil {
 			log.Printf("Successfully delivered on retryattemt- %d (attempt %d)", attempt+1,attempt+2)
-			return nil
+			return no,nil
 		}
+		no++;
 		log.Printf("Attempt %d failed: %v", attempt+2, err)
 		// Only sleep if it's not the last retry attempt
 		if attempt < MaxRetryAttempts-1 {
@@ -177,5 +179,5 @@ func deliverPayloadWithRetry(payload json.RawMessage, targetURL string, webHookI
 		}
 	}
 
-	return fmt.Errorf("failed to deliver payload after %d retries: %v", MaxRetryAttempts, err)
+	return no, fmt.Errorf("failed to deliver payload after %d retries: %v", MaxRetryAttempts, err)
 }
