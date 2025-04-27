@@ -1,32 +1,33 @@
 # Step 1: Build the Next.js app
 FROM node:18-alpine AS build
 
-# Set working directory
 WORKDIR /app
 
+# Copy package.json and package-lock.json
+COPY package*.json ./
+
 # Install dependencies
-COPY frontend/package*.json ./
 RUN npm install
 
-# Copy the whole Next.js app
-COPY frontend/ ./
+# Copy all other files
+COPY . .
 
-# Build the Next.js app (creates optimized production build)
+# Build the Next.js app
 RUN npm run build
 
-# Step 2: Serve the app with Next.js
+# Step 2: Production image
 FROM node:18-alpine AS production
 
 WORKDIR /app
 
-# Copy the build from the build stage
+# Copy built app from the previous stage
 COPY --from=build /app /app
 
 # Install only production dependencies
 RUN npm install --production
 
-# Expose the default Next.js port
+# Expose port 3000
 EXPOSE 3000
 
-# Start the Next.js server
+# Start the app
 CMD ["npm", "start"]
