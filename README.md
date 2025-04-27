@@ -57,6 +57,11 @@
    - Only logs within the last 72 hours are available.
 
 ---
+Deployed on same ews ec2 server.
+
+Frontend Link: http://13.51.170.153:3000/subscriptions
+Backend Link: http://13.51.170.153:8080
+DocumentationLink: https://documenter.getpostman.com/view/34442065/2sB2j1gBvt
 
 ## 🚀 Running the Project Locally
 
